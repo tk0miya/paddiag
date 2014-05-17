@@ -53,6 +53,9 @@ class Transformer(ast.NodeTransformer):
     # Global(identifier* names)
 
     # Expr(expr value)
+    def visit_Expr(self, node):
+        self.generic_visit(node)
+        return node.value
 
     # Pass
 
@@ -71,6 +74,11 @@ class Transformer(ast.NodeTransformer):
     # IfExp(expr test, expr body, expr orelse)
 
     # Dict(expr* keys, expr* values)
+    def visit_Dict(self, node):
+        self.generic_visit(node)
+        args = ("%s: %s" % (key, value) for key, value
+                in zip(node.keys, node.values))
+        return ["{%s}" % join(args)]
 
     # ListComp(expr elt, comprehension* generators)
 
@@ -86,8 +94,12 @@ class Transformer(ast.NodeTransformer):
     # Repr(expr value)
 
     # Num(object n) -- a number as a PyObject.
+    def visit_Num(self, node):
+        return [repr(node.n)]
 
     # Str(string s) -- need to specify raw, unicode, etc?
+    def visit_Str(self, node):
+        return [repr(node.s)]
 
     # Attribute(expr value, identifier attr, expr_context ctx)
 
@@ -96,8 +108,17 @@ class Transformer(ast.NodeTransformer):
     # Name(identifier id, expr_context ctx)
 
     # List(expr* elts, expr_context ctx)
+    def visit_List(self, node):
+        self.generic_visit(node)
+        return ["[%s]" % join(node.elts)]
 
     # Tuple(expr* elts, expr_context ctx)
+    def visit_Tuple(self, node):
+        self.generic_visit(node)
+        if len(node.elts) == 1:
+            return ["(%s,)" % join(node.elts)]
+        else:
+            return ["(%s)" % join(node.elts)]
 
     # Load
 
@@ -140,10 +161,19 @@ class Transformer(ast.NodeTransformer):
     # alias = (identifier name, identifier? asname)
 
 
-def main():
-    tree = ast.parse(open(sys.argv[0]).read())
+def parse(text):
+    tree = ast.parse(text)
+    return Transformer().visit(tree)
 
-    for node in Transformer().visit(tree).body:
+
+def join(node):
+    return ", ".join(node)
+
+
+def main():
+    tree = parse(open(sys.argv[0]).read())
+
+    for node in tree:
         print node
 
 if __name__ == '__main__':

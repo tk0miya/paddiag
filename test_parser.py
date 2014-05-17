@@ -1,13 +1,10 @@
 #!/usr/bin/python
 
 import unittest
-from parser import Transformer
+from parser import parse
 
 
 class TransformerTestCase(unittest.TestCase):
-    def setUp(self):
-        self.transformer = Transformer()
-
     # Module(stmt* body)
     # Interactive(stmt* body)
     # Expression(expr body)
@@ -54,6 +51,11 @@ class TransformerTestCase(unittest.TestCase):
     # Global(identifier* names)
 
     # Expr(expr value)
+    def test_Expr(self):
+        source = "1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # Pass
 
@@ -72,6 +74,11 @@ class TransformerTestCase(unittest.TestCase):
     # IfExp(expr test, expr body, expr orelse)
 
     # Dict(expr* keys, expr* values)
+    def test_Dict(self):
+        source = "{1: 2, '3': 4}"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # ListComp(expr elt, comprehension* generators)
 
@@ -87,8 +94,23 @@ class TransformerTestCase(unittest.TestCase):
     # Repr(expr value)
 
     # Num(object n) -- a number as a PyObject.
+    def test_Num(self):
+        source = "1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        source = "1.1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # Str(string s) -- need to specify raw, unicode, etc?
+    def test_Str(self):
+        source = "'Hello world'"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # Attribute(expr value, identifier attr, expr_context ctx)
 
@@ -97,8 +119,23 @@ class TransformerTestCase(unittest.TestCase):
     # Name(identifier id, expr_context ctx)
 
     # List(expr* elts, expr_context ctx)
+    def test_List(self):
+        source = "[1, 2, '3']"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # Tuple(expr* elts, expr_context ctx)
+    def test_Tuple(self):
+        source = "(1, 2, '3')"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        source = "(1,)"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # Load
 
@@ -139,3 +176,7 @@ class TransformerTestCase(unittest.TestCase):
     # keyword = (identifier arg, expr value)
 
     # alias = (identifier name, identifier? asname)
+
+
+if __name__ == '__main__':
+    unittest.main()
