@@ -150,6 +150,32 @@ class TransformerTestCase(unittest.TestCase):
         self.assertEqual(ret.body[0], source)
 
     # UnaryOp(unaryop op, expr operand)
+    def test_UnaryOp(self):
+        # Invert
+        source = "~ var"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # Not
+        source = "not var"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # UAdd
+        source = "+ var"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # USub
+        source = "- var"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+    # Invert | Not | UAdd | USub
 
     # Lambda(arguments args, expr body)
 
@@ -303,8 +329,6 @@ class TransformerTestCase(unittest.TestCase):
     # ExtSlice(slice* dims)
 
     # Index(expr value)
-
-    # Invert | Not | UAdd | USub
 
     # comprehension = (expr target, expr iter, expr* ifs)
 

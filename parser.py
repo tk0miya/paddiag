@@ -30,6 +30,10 @@ class Transformer(ast.NodeTransformer):
         ast.IsNot: 'is not',
         ast.In: 'in',
         ast.NotIn: 'not in',
+        ast.Invert: '~',
+        ast.Not: 'not',
+        ast.UAdd: '+',
+        ast.USub: '-',
     }
 
     # Module(stmt* body)
@@ -102,6 +106,9 @@ class Transformer(ast.NodeTransformer):
         return ["%s %s %s" % (join(node.left), join(node.op), join(node.right))]
 
     # UnaryOp(unaryop op, expr operand)
+    def visit_UnaryOp(self, node):
+        self.generic_visit(node)
+        return ["%s %s" % (join(node.op), join(node.operand))]
 
     # Lambda(arguments args, expr body)
 
@@ -180,8 +187,6 @@ class Transformer(ast.NodeTransformer):
     # ExtSlice(slice* dims)
 
     # Index(expr value)
-
-    # Invert | Not | UAdd | USub
 
     # comprehension = (expr target, expr iter, expr* ifs)
 
