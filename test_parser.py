@@ -17,8 +17,18 @@ class TransformerTestCase(unittest.TestCase):
     # ClassDef(identifier name, expr* bases, stmt* body, expr *decorator_list)
 
     # Return(expr? value)
+    def test_Return(self):
+        source = "return 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # Delete(expr* targets)
+    def test_Delete(self):
+        source = "del var"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # Assign(expr* targets, expr value)
     def test_Assign(self):
@@ -30,6 +40,11 @@ class TransformerTestCase(unittest.TestCase):
     # AugAssign(expr target, operator op, expr value)
 
     # Print(expr? dest, expr* values, bool nl)
+    def test_Print(self):
+        source = "print 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # For(expr target, expr iter, stmt* body, stmt* orelse)
 
@@ -40,12 +55,37 @@ class TransformerTestCase(unittest.TestCase):
     # With(expr context_expr, expr? optional_vars, stmt* body)
 
     # Raise(expr? type, expr? inst, expr? tback)
+    def test_Raise(self):
+        source = "raise Exception"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        source = "raise Exception, 'message'"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        source = "raise Exception, 'message', tback"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # TryExcept(stmt* body, excepthandler* handlers, stmt* orelse)
 
     # TryFinally(stmt* body, stmt* finalbody)
 
     # Assert(expr test, expr? msg)
+    def test_Assert(self):
+        source = "assert 1 == 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        source = "assert 1 == 1, 'ok'"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # Import(alias* names)
     def test_Import(self):
@@ -74,6 +114,11 @@ class TransformerTestCase(unittest.TestCase):
     # Exec(expr body, expr? globals, expr? locals)
 
     # Global(identifier* names)
+    def test_Global(self):
+        source = "global var"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # Expr(expr value)
     def test_Expr(self):
@@ -83,10 +128,25 @@ class TransformerTestCase(unittest.TestCase):
         self.assertEqual(ret.body[0], source)
 
     # Pass
+    def test_Pass(self):
+        source = "pass"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # Break
+    def test_Break(self):
+        source = "break"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # Continue
+    def test_Continue(self):
+        source = "continue"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # BoolOp(boolop op, expr* values)
     def test_BoolOp(self):
@@ -195,8 +255,6 @@ class TransformerTestCase(unittest.TestCase):
         self.assertEqual(len(ret.body), 1)
         self.assertEqual(ret.body[0], source)
 
-    # Invert | Not | UAdd | USub
-
     # Lambda(arguments args, expr body)
 
     # IfExp(expr test, expr body, expr orelse)
@@ -213,6 +271,16 @@ class TransformerTestCase(unittest.TestCase):
     # GeneratorExp(expr elt, comprehension* generators)
 
     # Yield(expr? value)
+    def test_Yield(self):
+        source = "yield"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        source = "yield 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # Compare(expr left, cmpop* ops, expr* comparators)
     def test_Compare(self):

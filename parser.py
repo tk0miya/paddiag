@@ -34,6 +34,9 @@ class Transformer(ast.NodeTransformer):
         ast.Not: 'not',
         ast.UAdd: '+',
         ast.USub: '-',
+        ast.Pass: 'pass',
+        ast.Break: 'break',
+        ast.Continue: 'continue',
     }
 
     # Module(stmt* body)
@@ -48,8 +51,14 @@ class Transformer(ast.NodeTransformer):
     # ClassDef(identifier name, expr* bases, stmt* body, expr *decorator_list)
 
     # Return(expr? value)
+    def visit_Return(self, node):
+        self.generic_visit(node)
+        return ["return %s" % join(node.value)]
 
     # Delete(expr* targets)
+    def visit_Delete(self, node):
+        self.generic_visit(node)
+        return ["del %s" % join(node.targets)]
 
     # Assign(expr* targets, expr value)
     def visit_Assign(self, node):
@@ -59,6 +68,9 @@ class Transformer(ast.NodeTransformer):
     # AugAssign(expr target, operator op, expr value)
 
     # Print(expr? dest, expr* values, bool nl)
+    def visit_Print(self, node):
+        self.generic_visit(node)
+        return ["print %s" % join(node.values)]
 
     # For(expr target, expr iter, stmt* body, stmt* orelse)
 
@@ -69,12 +81,20 @@ class Transformer(ast.NodeTransformer):
     # With(expr context_expr, expr? optional_vars, stmt* body)
 
     # Raise(expr? type, expr? inst, expr? tback)
+    def visit_Raise(self, node):
+        self.generic_visit(node)
+        args = filter(None, [join(node.type), join(node.inst), join(node.tback)])
+        return ["raise %s" % join(args)]
 
     # TryExcept(stmt* body, excepthandler* handlers, stmt* orelse)
 
     # TryFinally(stmt* body, stmt* finalbody)
 
     # Assert(expr test, expr? msg)
+    def visit_Assert(self, node):
+        self.generic_visit(node)
+        args = filter(None, [join(node.test), join(node.msg)])
+        return ["assert %s" % join(args)]
 
     # Import(alias* names)
     def visit_Import(self, node):
@@ -89,17 +109,14 @@ class Transformer(ast.NodeTransformer):
     # Exec(expr body, expr? globals, expr? locals)
 
     # Global(identifier* names)
+    def visit_Global(self, node):
+        self.generic_visit(node)
+        return ["global %s" % join(node.names)]
 
     # Expr(expr value)
     def visit_Expr(self, node):
         self.generic_visit(node)
         return node.value
-
-    # Pass
-
-    # Break
-
-    # Continue
 
     # BoolOp(boolop op, expr* values)
     def visit_BoolOp(self, node):
@@ -132,6 +149,12 @@ class Transformer(ast.NodeTransformer):
     # GeneratorExp(expr elt, comprehension* generators)
 
     # Yield(expr? value)
+    def visit_Yield(self, node):
+        self.generic_visit(node)
+        if node.value:
+            return ["yield %s" % join(node.value)]
+        else:
+            return ["yield"]
 
     # Compare(expr left, cmpop* ops, expr* comparators)
     def visit_Compare(self, node):
@@ -224,7 +247,10 @@ def parse(text):
 
 
 def join(node):
-    return ", ".join(node)
+    if node is None:
+        return None
+    else:
+        return ", ".join(node)
 
 
 def main():
