@@ -23,6 +23,9 @@ class Transformer(ast.NodeTransformer):
     # Delete(expr* targets)
 
     # Assign(expr* targets, expr value)
+    def visit_Assign(self, node):
+        self.generic_visit(node)
+        return ["%s = %s" % (join(node.targets), join(node.value))]
 
     # AugAssign(expr target, operator op, expr value)
 
@@ -106,6 +109,8 @@ class Transformer(ast.NodeTransformer):
     # Subscript(expr value, slice slice, expr_context ctx)
 
     # Name(identifier id, expr_context ctx)
+    def visit_Name(self, node):
+        return [node.id]
 
     # List(expr* elts, expr_context ctx)
     def visit_List(self, node):

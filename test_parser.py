@@ -21,6 +21,11 @@ class TransformerTestCase(unittest.TestCase):
     # Delete(expr* targets)
 
     # Assign(expr* targets, expr value)
+    def test_Assign(self):
+        source = "var = 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # AugAssign(expr target, operator op, expr value)
 
@@ -117,6 +122,11 @@ class TransformerTestCase(unittest.TestCase):
     # Subscript(expr value, slice slice, expr_context ctx)
 
     # Name(identifier id, expr_context ctx)
+    def test_Name(self):
+        source = "var1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # List(expr* elts, expr_context ctx)
     def test_List(self):
