@@ -5,7 +5,32 @@ import ast
 
 
 class Transformer(ast.NodeTransformer):
-    pass
+    symbols = {
+        ast.And: 'and',
+        ast.Or: 'or',
+        ast.Add: '+',
+        ast.Sub: '-',
+        ast.Mult: '*',
+        ast.Div: '/',
+        ast.Mod: '%',
+        ast.Pow: '**',
+        ast.LShift: '<<',
+        ast.RShift: '>>',
+        ast.BitOr: '|',
+        ast.BitXor: '^',
+        ast.BitAnd: '&',
+        ast.FloorDiv: '//',
+        ast.Eq: '==',
+        ast.NotEq: '!=',
+        ast.Lt: '<',
+        ast.LtE: '<=',
+        ast.Gt: '>',
+        ast.GtE: '>=',
+        ast.Is: 'is',
+        ast.IsNot: 'is not',
+        ast.In: 'in',
+        ast.NotIn: 'not in',
+    }
 
     # Module(stmt* body)
     # Interactive(stmt* body)
@@ -67,8 +92,14 @@ class Transformer(ast.NodeTransformer):
     # Continue
 
     # BoolOp(boolop op, expr* values)
+    def visit_BoolOp(self, node):
+        self.generic_visit(node)
+        return ["%s %s %s" % (node.values[0], join(node.op), node.values[1])]
 
     # BinOp(expr left, operator op, expr right)
+    def visit_BinOp(self, node):
+        self.generic_visit(node)
+        return ["%s %s %s" % (join(node.left), join(node.op), join(node.right))]
 
     # UnaryOp(unaryop op, expr operand)
 
@@ -90,6 +121,11 @@ class Transformer(ast.NodeTransformer):
     # Yield(expr? value)
 
     # Compare(expr left, cmpop* ops, expr* comparators)
+    def visit_Compare(self, node):
+        self.generic_visit(node)
+        args = ("%s %s" % (op, join(comparator)) for op, comparator
+                in zip(node.ops, node.comparators))
+        return ["%s %s" % (join(node.left), " ".join(args))]
 
     # Call(expr func, expr* args, keyword* keywords,
     #      expr? starargs, expr? kwargs)
@@ -145,14 +181,7 @@ class Transformer(ast.NodeTransformer):
 
     # Index(expr value)
 
-    # And | Or
-
-    # Add | Sub | Mult | Div | Mod | Pow | LShift
-    #   | RShift | BitOr | BitXor | BitAnd | FloorDiv
-
     # Invert | Not | UAdd | USub
-
-    # Eq | NotEq | Lt | LtE | Gt | GtE | Is | IsNot | In | NotIn
 
     # comprehension = (expr target, expr iter, expr* ifs)
 
@@ -164,6 +193,12 @@ class Transformer(ast.NodeTransformer):
     # keyword = (identifier arg, expr value)
 
     # alias = (identifier name, identifier? asname)
+
+    def visit(self, node):
+        if node.__class__ in self.symbols:
+            return [self.symbols[node.__class__]]
+        else:
+            return super(Transformer, self).visit(node)
 
 
 def parse(text):

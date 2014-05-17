@@ -69,8 +69,85 @@ class TransformerTestCase(unittest.TestCase):
     # Continue
 
     # BoolOp(boolop op, expr* values)
+    def test_BoolOp(self):
+        source = "var and var or var"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # BinOp(expr left, operator op, expr right)
+    def test_BinOp(self):
+        # Add
+        source = "1 + 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # Sub
+        source = "1 - 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # Mult
+        source = "1 * 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # Div
+        source = "1 / 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # Mod
+        source = "1 % 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # Pow
+        source = "1 ** 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # LShift
+        source = "1 << 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # RShift
+        source = "1 >> 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # BitOr
+        source = "1 | 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # BitXor
+        source = "1 ^ 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # BitAnd
+        source = "1 & 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # FloorDiv
+        source = "1 // 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # UnaryOp(unaryop op, expr operand)
 
@@ -92,6 +169,66 @@ class TransformerTestCase(unittest.TestCase):
     # Yield(expr? value)
 
     # Compare(expr left, cmpop* ops, expr* comparators)
+    def test_Compare(self):
+        # Eq
+        source = "1 == 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # NotEq
+        source = "1 != 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # Lt
+        source = "1 < 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # LtE
+        source = "1 <= 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # Gt
+        source = "1 > 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # GtE
+        source = "1 >= 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # Is
+        source = "1 is 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # IsNot
+        source = "1 is not 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # In
+        source = "1 in 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # NotIn
+        source = "1 not in 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # Call(expr func, expr* args, keyword* keywords,
     #      expr? starargs, expr? kwargs)
@@ -167,14 +304,7 @@ class TransformerTestCase(unittest.TestCase):
 
     # Index(expr value)
 
-    # And | Or
-
-    # Add | Sub | Mult | Div | Mod | Pow | LShift
-    #   | RShift | BitOr | BitXor | BitAnd | FloorDiv
-
     # Invert | Not | UAdd | USub
-
-    # Eq | NotEq | Lt | LtE | Gt | GtE | Is | IsNot | In | NotIn
 
     # comprehension = (expr target, expr iter, expr* ifs)
 
