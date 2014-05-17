@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import ast
 import unittest
 from parser import parse
 
@@ -38,6 +39,16 @@ class TransformerTestCase(unittest.TestCase):
         self.assertEqual(ret.body[0], source)
 
     # AugAssign(expr target, operator op, expr value)
+    def test_AugAssign(self):
+        source = "var += 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        source = "var -= 1"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # Print(expr? dest, expr* values, bool nl)
     def test_Print(self):
@@ -112,6 +123,11 @@ class TransformerTestCase(unittest.TestCase):
         self.assertEqual(ret.body[0], source)
 
     # Exec(expr body, expr? globals, expr? locals)
+    def test_Exec(self):
+        source = "exec('1')"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # Global(identifier* names)
     def test_Global(self):
@@ -256,8 +272,31 @@ class TransformerTestCase(unittest.TestCase):
         self.assertEqual(ret.body[0], source)
 
     # Lambda(arguments args, expr body)
+    def test_Lambda(self):
+        source = "lambda x, y: x + y"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        source = "lambda x, y, *args, **kwargs: x + y"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        source = "lambda x, y=1, *args, **kwargs: x + y"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # IfExp(expr test, expr body, expr orelse)
+    def test_IfExp(self):
+        source = "1 if 2 else 3"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertIsInstance(ret.body[0], ast.If)
+        self.assertEqual(ret.body[0].test, ["2"])
+        self.assertEqual(ret.body[0].body, ["1"])
+        self.assertEqual(ret.body[0].orelse, ["3"])
 
     # Dict(expr* keys, expr* values)
     def test_Dict(self):
@@ -376,6 +415,16 @@ class TransformerTestCase(unittest.TestCase):
 
     # Call(expr func, expr* args, keyword* keywords,
     #      expr? starargs, expr? kwargs)
+    def test_Call(self):
+        source = "foo(1, 2)"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        source = "foo(1, 2, var1=3, var2=4, *args, **kwargs)"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # Repr(expr value)
 
@@ -472,26 +521,7 @@ class TransformerTestCase(unittest.TestCase):
         self.assertEqual(len(ret.body), 1)
         self.assertEqual(ret.body[0], source)
 
-    # Load
-
-    # Store
-
-    # Del
-
-    # AugLoad
-
-    # AugStore
-
-    # Param
-
-    # comprehension = (expr target, expr iter, expr* ifs)
-
     # excepthandler = ExceptHandler(expr? type, expr? name, stmt* body)
-
-    # arguments = (expr* args, identifier? vararg,
-    #              identifier? kwarg, expr* defaults)
-
-    # keyword = (identifier arg, expr value)
 
 
 if __name__ == '__main__':

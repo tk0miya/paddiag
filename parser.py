@@ -2,6 +2,7 @@
 
 import sys
 import ast
+from itertools import izip_longest
 
 
 class Transformer(ast.NodeTransformer):
@@ -67,6 +68,9 @@ class Transformer(ast.NodeTransformer):
         return ["%s = %s" % (join(node.targets), join(node.value))]
 
     # AugAssign(expr target, operator op, expr value)
+    def visit_AugAssign(self, node):
+        self.generic_visit(node)
+        return ["%s %s= %s" % (join(node.target), join(node.op), join(node.value))]
 
     # Print(expr? dest, expr* values, bool nl)
     def visit_Print(self, node):
@@ -108,6 +112,9 @@ class Transformer(ast.NodeTransformer):
         return ["from %s import %s" % (node.module, join(node.names))]
 
     # Exec(expr body, expr? globals, expr? locals)
+    def visit_Exec(self, node):
+        self.generic_visit(node)
+        return ["exec(%s)" % join(node.body)]
 
     # Global(identifier* names)
     def visit_Global(self, node):
@@ -135,8 +142,14 @@ class Transformer(ast.NodeTransformer):
         return ["%s %s" % (join(node.op), join(node.operand))]
 
     # Lambda(arguments args, expr body)
+    def visit_Lambda(self, node):
+        self.generic_visit(node)
+        return ["lambda %s: %s" % (join(node.args), join(node.body))]
 
     # IfExp(expr test, expr body, expr orelse)
+    def visit_IfExp(self, node):
+        self.generic_visit(node)
+        return ast.If(node.test, node.body, node.orelse)
 
     # Dict(expr* keys, expr* values)
     def visit_Dict(self, node):
@@ -176,6 +189,15 @@ class Transformer(ast.NodeTransformer):
 
     # Call(expr func, expr* args, keyword* keywords,
     #      expr? starargs, expr? kwargs)
+    def visit_Call(self, node):
+        self.generic_visit(node)
+        args = (node.args + node.keywords)
+        if node.starargs:
+            args.append("*%s" % join(node.starargs))
+        if node.kwargs:
+            args.append("**%s" % join(node.kwargs))
+
+        return ["%s(%s)" % (join(node.func), join(args))]
 
     # Repr(expr value)
 
@@ -213,20 +235,6 @@ class Transformer(ast.NodeTransformer):
             return ["(%s,)" % join(node.elts)]
         else:
             return ["(%s)" % join(node.elts)]
-
-    # Load
-
-    # Store
-
-    # Del
-
-    # AugLoad
-
-    # AugStore
-
-    # Param
-
-    # Ellipsis
 
     # Slice(expr? lower, expr? upper, expr? step)
     def visit_Slice(self, node):
@@ -266,8 +274,29 @@ class Transformer(ast.NodeTransformer):
 
     # arguments = (expr* args, identifier? vararg,
     #              identifier? kwarg, expr* defaults)
+    def visit_arguments(self, node):
+        def to_arg(name, default):
+            if default is None:
+                return name
+            else:
+                return "%s=%s" % (name, default)
+
+        self.generic_visit(node)
+        args = node.args
+        rargs = [to_arg(arg, default) for arg, default in izip_longest(reversed(node.args), node.defaults)]
+
+        args = list(reversed(rargs))
+        if node.vararg:
+            args.append("*%s" % node.vararg)
+        if node.kwarg:
+            args.append("**%s" % node.kwarg)
+
+        return [join(args)]
 
     # keyword = (identifier arg, expr value)
+    def visit_keyword(self, node):
+        self.generic_visit(node)
+        return ["%s=%s" % (node.arg, join(node.value))]
 
     # alias = (identifier name, identifier? asname)
     def visit_alias(self, node):
