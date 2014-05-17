@@ -37,6 +37,7 @@ class Transformer(ast.NodeTransformer):
         ast.Pass: 'pass',
         ast.Break: 'break',
         ast.Continue: 'continue',
+        ast.Ellipsis: '...',
     }
 
     # Module(stmt* body)
@@ -187,8 +188,14 @@ class Transformer(ast.NodeTransformer):
         return [repr(node.s)]
 
     # Attribute(expr value, identifier attr, expr_context ctx)
+    def visit_Attribute(self, node):
+        self.generic_visit(node)
+        return ["%s.%s" % (join(node.value), node.attr)]
 
     # Subscript(expr value, slice slice, expr_context ctx)
+    def visit_Subscript(self, node):
+        self.generic_visit(node)
+        return ["%s[%s]" % (join(node.value), join(node.slice))]
 
     # Name(identifier id, expr_context ctx)
     def visit_Name(self, node):
@@ -222,10 +229,27 @@ class Transformer(ast.NodeTransformer):
     # Ellipsis
 
     # Slice(expr? lower, expr? upper, expr? step)
+    def visit_Slice(self, node):
+        self.generic_visit(node)
+        if node.step:
+            return ["%s:%s:%s" % (join(node.lower) or '',
+                                  join(node.upper) or '',
+                                  join(node.step) or '')]
+        elif node.upper:
+            return ["%s:%s" % (join(node.lower) or '',
+                               join(node.upper) or '')]
+        else:
+            return [join(node.lower)]
 
     # ExtSlice(slice* dims)
+    def visit_ExtSlice(self, node):
+        self.generic_visit(node)
+        return [join(node.dims)]
 
     # Index(expr value)
+    def visit_Index(self, node):
+        self.generic_visit(node)
+        return [join(node.value)]
 
     # comprehension = (expr target, expr iter, expr* ifs)
     def visit_comprehension(self, node):

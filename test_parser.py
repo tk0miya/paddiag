@@ -399,8 +399,52 @@ class TransformerTestCase(unittest.TestCase):
         self.assertEqual(ret.body[0], source)
 
     # Attribute(expr value, identifier attr, expr_context ctx)
+    def test_Attribute(self):
+        source = "var.attr"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # Subscript(expr value, slice slice, expr_context ctx)
+    def test_Subscript(self):
+        # Ellipsis
+        source = "var[...]"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # Slice
+        source = "var[1:2:3]"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        source = "var[1]"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        source = "var[:2]"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        source = "var[::3]"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # ExtSlice
+        source = "var[:2, :2]"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # Index
+        source = "var[1]"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # Name(identifier id, expr_context ctx)
     def test_Name(self):
@@ -439,14 +483,6 @@ class TransformerTestCase(unittest.TestCase):
     # AugStore
 
     # Param
-
-    # Ellipsis
-
-    # Slice(expr? lower, expr? upper, expr? step)
-
-    # ExtSlice(slice* dims)
-
-    # Index(expr value)
 
     # comprehension = (expr target, expr iter, expr* ifs)
 
