@@ -145,8 +145,18 @@ class Transformer(ast.NodeTransformer):
         return ["{%s}" % join(args)]
 
     # ListComp(expr elt, comprehension* generators)
+    def visit_ListComp(self, node):
+        self.generic_visit(node)
+        args = (join(node.elt),
+                " ".join("for %s" % gen for gen in node.generators))
+        return ["[%s %s]" % args]
 
     # GeneratorExp(expr elt, comprehension* generators)
+    def visit_GeneratorExp(self, node):
+        self.generic_visit(node)
+        args = (join(node.elt),
+                " ".join("for %s" % gen for gen in node.generators))
+        return ["(%s %s)" % args]
 
     # Yield(expr? value)
     def visit_Yield(self, node):
@@ -218,6 +228,15 @@ class Transformer(ast.NodeTransformer):
     # Index(expr value)
 
     # comprehension = (expr target, expr iter, expr* ifs)
+    def visit_comprehension(self, node):
+        self.generic_visit(node)
+        if node.ifs:
+            args = (join(node.target), join(node.iter),
+                    " ".join("if %s" % cond for cond in node.ifs))
+            return ["%s in %s %s" % args]
+        else:
+            args = (join(node.target), join(node.iter))
+            return ["%s in %s" % args]
 
     # excepthandler = ExceptHandler(expr? type, expr? name, stmt* body)
 

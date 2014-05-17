@@ -267,8 +267,38 @@ class TransformerTestCase(unittest.TestCase):
         self.assertEqual(ret.body[0], source)
 
     # ListComp(expr elt, comprehension* generators)
+    def test_ListComp(self):
+        source = "[elem * 2 for elem in var]"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        source = "[elem * 2 for elem in var if cond]"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        source = "[elem * 2 for elem in var if cond if cond]"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        source = "[elem * 2 for elem in var for elem2 in var2]"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        source = "[elem * 2 for elem in var if cond for elem2 in var2 if cond]"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # GeneratorExp(expr elt, comprehension* generators)
+    def test_GeneratorExp(self):
+        source = "(elem * 2 for elem in var)"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # Yield(expr? value)
     def test_Yield(self):
