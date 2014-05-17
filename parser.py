@@ -77,8 +77,14 @@ class Transformer(ast.NodeTransformer):
     # Assert(expr test, expr? msg)
 
     # Import(alias* names)
+    def visit_Import(self, node):
+        self.generic_visit(node)
+        return ["import %s" % join(node.names)]
 
     # ImportFrom(identifier module, alias* names, int? level)
+    def visit_ImportFrom(self, node):
+        self.generic_visit(node)
+        return ["from %s import %s" % (node.module, join(node.names))]
 
     # Exec(expr body, expr? globals, expr? locals)
 
@@ -198,6 +204,12 @@ class Transformer(ast.NodeTransformer):
     # keyword = (identifier arg, expr value)
 
     # alias = (identifier name, identifier? asname)
+    def visit_alias(self, node):
+        self.generic_visit(node)
+        if node.asname:
+            return ["%s as %s" % (node.name, node.asname)]
+        else:
+            return [node.name]
 
     def visit(self, node):
         if node.__class__ in self.symbols:

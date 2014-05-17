@@ -48,8 +48,28 @@ class TransformerTestCase(unittest.TestCase):
     # Assert(expr test, expr? msg)
 
     # Import(alias* names)
+    def test_Import(self):
+        source = "import sys"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        source = "import sys as var"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # ImportFrom(identifier module, alias* names, int? level)
+    def test_ImportFrom(self):
+        source = "from sys import path"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        source = "from sys import path as var"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
 
     # Exec(expr body, expr? globals, expr? locals)
 
@@ -338,8 +358,6 @@ class TransformerTestCase(unittest.TestCase):
     #              identifier? kwarg, expr* defaults)
 
     # keyword = (identifier arg, expr value)
-
-    # alias = (identifier name, identifier? asname)
 
 
 if __name__ == '__main__':
