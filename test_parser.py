@@ -448,7 +448,14 @@ class TransformerTestCase(unittest.TestCase):
 
     # Str(string s) -- need to specify raw, unicode, etc?
     def test_Str(self):
+        # str
         source = "'Hello world'"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
+        # unicode
+        source = "u'Hello world'"
         ret = parse(source)
         self.assertEqual(len(ret.body), 1)
         self.assertEqual(ret.body[0], source)
