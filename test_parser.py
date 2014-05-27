@@ -359,6 +359,12 @@ class TransformerTestCase(unittest.TestCase):
         self.assertEqual(len(ret.body), 1)
         self.assertEqual(ret.body[0], source)
 
+        # Eq (str)
+        source = "name == 'Jiro'"
+        ret = parse(source)
+        self.assertEqual(len(ret.body), 1)
+        self.assertEqual(ret.body[0], source)
+
         # NotEq
         source = "1 != 1"
         ret = parse(source)

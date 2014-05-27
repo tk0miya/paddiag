@@ -183,8 +183,7 @@ class Transformer(ast.NodeTransformer):
     # Compare(expr left, cmpop* ops, expr* comparators)
     def visit_Compare(self, node):
         self.generic_visit(node)
-        args = ("%s %s" % (op, join(comparator)) for op, comparator
-                in zip(node.ops, node.comparators))
+        args = ("%s %s" % pair for pair in zip(node.ops, node.comparators))
         return ["%s %s" % (join(node.left), " ".join(args))]
 
     # Call(expr func, expr* args, keyword* keywords,
