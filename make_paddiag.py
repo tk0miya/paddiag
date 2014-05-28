@@ -4,7 +4,7 @@ import os
 import sys
 import ast
 from parser import parse
-from blockdiag.imagedraw.png import ImageDrawEx
+from blockdiag.imagedraw.svg import SVGImageDraw
 from blockdiag.utils import Box, XY
 from blockdiag.utils.fontmap import FontMap
 
@@ -28,7 +28,7 @@ def box(x, y, width=1, height=1):
                y + NODE_HEIGHT * height + SPAN_HEIGHT * (height - 1))
 
 
-class PADImageDraw(ImageDrawEx):
+class PADImageDraw(SVGImageDraw):
     def __init__(self, *args, **kwargs):
         super(PADImageDraw, self).__init__(*args, **kwargs)
         self.fontmap = FontMap()
@@ -38,14 +38,14 @@ class PADImageDraw(ImageDrawEx):
     def if_block(self, x, y, stmt):
         width, height = self.statement(x + 1, y, stmt.body)
 
-        textbox = box(x, y, height + 0.25).shift(y=NODE_HEIGHT / 3)
+        textbox = box(x, y, height=height + 0.25).shift(y=NODE_HEIGHT / 3)
         shape = (textbox.topleft, textbox.topright, textbox.right.shift(x=-32),
                  textbox.bottomright, textbox.bottomleft, textbox.topleft)
         self.line(shape, fill='black')
         self.textarea(textbox, "".join(stmt.test), self.font, fill='black')
         self.link(x, textbox.top.y)
 
-        if stmt.orelse is None:
+        if stmt.orelse == []:
             height += 1
         else:
             w, h = self.statement(x + 1, y + height, stmt.orelse)
@@ -114,15 +114,15 @@ class PADImageDraw(ImageDrawEx):
         self.line((start.topleft, end.bottomleft), fill='black')
 
     def link(self, x, py):
-        start = (box(x, 0).right.x, py)
-        end = (box(x + 1, 0).left.x, py)
+        start = XY(box(x, 0).right.x, py)
+        end = XY(box(x + 1, 0).left.x, py)
         self.line((start, end), fill='black')
 
 
 def main():
     tree = parse(open(sys.argv[1]).read())
 
-    path = os.path.splitext(sys.argv[1])[0] + '.png'
+    path = os.path.splitext(sys.argv[1])[0] + '.svg'
     drawer = PADImageDraw(path)
     width, height = drawer.render(tree)
 
@@ -130,7 +130,7 @@ def main():
     diagram = box(0, 0, width=width, height=height)
     drawer.set_canvas_size(diagram.bottomright.shift(PAGE_MARGIN, PAGE_MARGIN))
     drawer.render(tree)
-    drawer.save(None, None, 'PNG')
+    drawer.save(None, None, 'SVG')
 
 
 if __name__ == '__main__':
