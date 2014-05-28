@@ -50,7 +50,7 @@ def flowchartdiag_generate_image(source, format):
     from blockdiag import parser, builder, drawer
     from blockdiag.utils.fontmap import FontMap
     from StringIO import StringIO
-    from make_flowchart import parse, write_stmt
+    from flowchartdiag import parse, write_stmt
 
     try:
         ast = parse(source)
@@ -121,7 +121,7 @@ def paddiag_image():
 
 
 def paddiag_generate_image(source, format):
-    from make_paddiag import parse, PADImageDraw, box, PAGE_MARGIN
+    from paddiag import parse, PADImageDraw, box, PAGE_MARGIN
 
     try:
         tree = parse(source)
@@ -142,6 +142,11 @@ def paddiag_generate_image(source, format):
         error = str(e)
 
     return dict(image=image, etype=etype, error=error)
+
+
+def main():
+    app.debug = True
+    app.run()
 
 
 if __name__ == '__main__':
